@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InterviewIQ — AI Mock Interview Coach</title>
+<link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+<div class="glow-bg"></div>
+<div class="glow-bg2"></div>
+<div class="app">
+
+  <header>
+    <a class="logo" href="#">
+      <span class="logo-text">Interview<span>IQ</span></span>
+    </a>
+
+  </header>
+
+
+
+  <main>
+
+
+    <!-- ═══ PANEL 1: INTAKE ═══ -->
+    <div class="panel active" id="panel-intake">
+      <div class="intake-header">
+        <h1>Prep smarter, land the <em>offer.</em></h1>
+        <p class="subtitle">Tell us about the role you're targeting. We'll build a personalised interview and give you real coaching feedback.</p>
+      </div>
+      <div class="intake-grid">
+        <div class="form-group">
+          <label>Target Role</label>
+          <input type="text" id="role-input" placeholder="e.g. Senior Frontend Engineer"/>
+        </div>
+        <div class="form-group">
+          <label>Company (optional)</label>
+          <input type="text" id="company-input" placeholder="e.g. Google, a startup, any"/>
+        </div>
+        <div class="form-group full">
+          <label>Your Background</label>
+          <textarea id="bg-input" placeholder="Brief summary — years of experience, tech stack, projects…"></textarea>
+        </div>
+        <div class="form-group full">
+          <label>Focus Area</label>
+          <div class="chip-group" id="focus-group">
+            <button class="chip selected" onclick="selectChip(this)">Behavioral</button>
+            <button class="chip" onclick="selectChip(this)">Technical</button>
+            <button class="chip" onclick="selectChip(this)">Case Study</button>
+            <button class="chip" onclick="selectChip(this)">Mixed</button>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label>Difficulty Level</label>
+          <div class="difficulty-track">
+            <button class="diff-btn junior selected" onclick="selectDiff(this)">Junior</button>
+            <button class="diff-btn mid" onclick="selectDiff(this)">Mid-Level</button>
+            <button class="diff-btn senior" onclick="selectDiff(this)">Senior</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn-primary" onclick="startInterview()">Generate Questions <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL 2: QUESTION BANK ═══ -->
+    <div class="panel" id="panel-qbank">
+      <div class="qbank-header">
+        <div>
+          <div class="eyebrow">Question Bank</div>
+          <h1 style="font-size:32px">Your interview,<br/>tailored.</h1>
+          <div class="qbank-meta">Role: <span id="role-display">—</span></div>
+        </div>
+        <button class="btn-secondary" onclick="goToPanel('panel-intake')">← Retake Intake</button>
+      </div>
+      <div class="question-list" id="question-list"></div>
+      <div class="panel-actions">
+        <button class="btn-primary" onclick="beginVoiceInterview()">Start Voice Interview <span class="arrow">→</span></button>
+        <button class="btn-secondary" onclick="startInterview()">↻ Regenerate</button>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL 3: INTERVIEW ═══ -->
+    <div class="panel" id="panel-interview">
+      <div class="interview-layout">
+        <div class="voice-stage" id="voice-stage">
+          <div class="avatar" id="avatar">
+            <div class="avatar-inner">🎙</div>
+            <div class="avatar-ring"></div>
+            <div class="avatar-ring2"></div>
+          </div>
+          <div class="ai-status" id="ai-status">Interviewer ready</div>
+          <div class="question-display" id="question-display">Preparing your interview…</div>
+          <div class="waveform" id="waveform">
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+          </div>
+          <div class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</div>
+          <div class="transcript-live" id="transcript-live">Press mic to answer<span class="cursor"></span></div>
+        </div>
+
+        <div class="sidebar">
+          <div class="sidebar-card">
+            <div class="sidebar-title">Turn Progress</div>
+            <div class="turn-dots" id="turn-dots"></div>
+          </div>
+          <div class="sidebar-card">
+            <div class="sidebar-title">Live Scores</div>
+            <div class="score-row">
+              <div class="score-item" id="score-clarity">
+                <div class="score-label-row"><span class="score-label">Clarity</span><span class="score-val">—</span></div>
+                <div class="score-track"><div class="score-fill" style="width:0%"></div></div>
+              </div>
+              <div class="score-item" id="score-relevance">
+                <div class="score-label-row"><span class="score-label">Relevance</span><span class="score-val">—</span></div>
+                <div class="score-track"><div class="score-fill" style="width:0%"></div></div>
+              </div>
+              <div class="score-item" id="score-structure">
+                <div class="score-label-row"><span class="score-label">Structure</span><span class="score-val">—</span></div>
+                <div class="score-track"><div class="score-fill" style="width:0%"></div></div>
+              </div>
+              <div class="score-item" id="score-depth">
+                <div class="score-label-row"><span class="score-label">Depth</span><span class="score-val">—</span></div>
+                <div class="score-track"><div class="score-fill" style="width:0%"></div></div>
+              </div>
+              <div class="score-item" id="score-completeness">
+                <div class="score-label-row"><span class="score-label">Completeness</span><span class="score-val">—</span></div>
+                <div class="score-track"><div class="score-fill" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="endInterview()" style="width:100%;justify-content:center">
+            End &amp; Get Feedback
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL 4: FEEDBACK ═══ -->
+    <div class="panel" id="panel-feedback">
+      <div class="feedback-header">
+        <div class="eyebrow">Interview Complete</div>
+        <h1>Here's your<br/><em>coaching report.</em></h1>
+      </div>
+      <div class="score-summary" id="score-summary"></div>
+      <div class="feedback-grid" id="report-body">
+        <div class="generating-state" style="grid-column:1/-1">
+          <div class="spinner"></div><p>Coach is writing your report…</p>
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn-primary" onclick="resetApp()">Start New Interview <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="/static/script.js"></script>
+</body>
+</html>

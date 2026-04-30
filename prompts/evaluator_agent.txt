@@ -1,0 +1,12 @@
+Evaluate this interview answer strictly based on the question and criteria. 
+Do not be overly generous. If the answer is weak, rate it poorly.
+
+Respond ONLY with valid JSON matching this exact schema:
+{
+  "clarity": int (1-10),
+  "relevance": int (1-10),
+  "technical_accuracy": int (1-10),
+  "communication_skills": int (1-10),
+  "completeness": int (1-10),
+  "feedback_notes": "string"
+}

@@ -1,0 +1,15 @@
+Generate exactly 7 interview questions ranked by priority.
+You will receive the interview category, difficulty level, and a list of suggested topics.
+
+Output ONLY valid JSON matching this exact schema:
+{
+  "questions": [
+    {
+      "priority": 1,
+      "question": "string",
+      "follow_up_probe": "string",
+      "evaluation_criteria": "string",
+      "type": "behavioral|technical|situational"
+    }
+  ]
+}
