@@ -16,18 +16,18 @@ An AI-first prototype for running realistic mock interviews. It uses a multi-age
    GROQ_API_KEY=your_groq_api_key_here
    ```
 
-3. **(Optional) Start the Local Voice Server**
-   If you want XTTS voice generation (requires a local TTS server):
-   ```bash
-   cd ../voice\ agent/tts-server
-   python app.py
-   ```
+3. **Voice Configuration**
+   The app now supports three levels of voice generation:
+   - **Integrated Browser Voice (Default)**: Works out of the box with no setup.
+   - **ElevenLabs (Cloud)**: Add an `ELEVENLABS_API_KEY` to your `.env` for premium high-quality voices.
+   - **Local XTTS (Optional)**: If you prefer a local server, start it at `http://localhost:5000`.
 
 4. **Start the API Server**
    ```bash
    python main.py
    ```
    Navigate to `http://localhost:8000` in your browser.
+
 
 ---
 

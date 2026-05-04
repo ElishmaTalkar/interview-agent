@@ -160,6 +160,9 @@ async function doAgentTurn(isFirst = false) {
 
     if (data.audio_url) {
       await playAudio(data.audio_url);
+    } else {
+      // Browser speech fallback if backend fails
+      await speakWithBrowser(data.text);
     }
 
     document.getElementById('avatar').classList.remove('speaking');
@@ -283,6 +286,23 @@ function playAudio(dataUri) {
     audio.onended = resolve;
     audio.onerror = resolve;
     audio.play().catch(resolve);
+  });
+}
+
+function speakWithBrowser(text) {
+  return new Promise(resolve => {
+    if (!window.speechSynthesis) return resolve();
+    const utterance = new SpeechSynthesisUtterance(text);
+    // Try to find a good English voice
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) || voices[0];
+    if (voice) utterance.voice = voice;
+    
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+    utterance.onend = resolve;
+    utterance.onerror = resolve;
+    window.speechSynthesis.speak(utterance);
   });
 }
 

@@ -201,27 +201,53 @@ async def report(req: ReportRequest):
 
 # ── TTS helper ─────────────────────────────────────────────────────────────────
 def _tts_url(text: str) -> Optional[str]:
-    """Returns a data-URI wav if TTS server is available, else None."""
+    """Returns a data-URI audio string if a TTS provider is available."""
+    # 1. Try local XTTS server first
     try:
-        voices_resp = requests.get(f"{TTS_SERVER}/voices", timeout=3)
-        if voices_resp.status_code != 200:
-            return None
-        voices = voices_resp.json().get("voices", [])
-        if not voices:
-            return None
-        voice_id = voices[0]["voice_id"]
-        resp = requests.post(
-            f"{TTS_SERVER}/speak",
-            json={"text": text, "voice_id": voice_id},
-            timeout=60,
-        )
-        if resp.status_code == 200:
-            import base64
-            b64 = base64.b64encode(resp.content).decode()
-            return f"data:audio/wav;base64,{b64}"
+        voices_resp = requests.get(f"{TTS_SERVER}/voices", timeout=1)
+        if voices_resp.status_code == 200:
+            voices = voices_resp.json().get("voices", [])
+            if voices:
+                voice_id = voices[0]["voice_id"]
+                resp = requests.post(
+                    f"{TTS_SERVER}/speak",
+                    json={"text": text, "voice_id": voice_id},
+                    timeout=60,
+                )
+                if resp.status_code == 200:
+                    import base64
+                    b64 = base64.b64encode(resp.content).decode()
+                    return f"data:audio/wav;base64,{b64}"
     except Exception:
         pass
+
+    # 2. Try ElevenLabs fallback if API key is present
+    api_key = os.environ.get("ELEVENLABS_API_KEY")
+    if api_key and api_key != "your_elevenlabs_api_key_here":
+        try:
+            # Default to "Adam" (pNInz6obpg8ndOeDr7S5)
+            voice_id = "pNInz6obpg8ndOeDr7S5" 
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+            headers = {
+                "Accept": "audio/mpeg",
+                "Content-Type": "application/json",
+                "xi-api-key": api_key
+            }
+            data = {
+                "text": text,
+                "model_id": "eleven_monolingual_v1",
+                "voice_settings": {"stability": 0.5, "similarity_boost": 0.5}
+            }
+            resp = requests.post(url, json=data, headers=headers, timeout=30)
+            if resp.status_code == 200:
+                import base64
+                b64 = base64.b64encode(resp.content).decode()
+                return f"data:audio/mpeg;base64,{b64}"
+        except Exception:
+            pass
+
     return None
+
 
 
 # ── Dev entry point ────────────────────────────────────────────────────────────
